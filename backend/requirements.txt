@@ -1,0 +1,8 @@
+fastapi
+pydantic
+pydantic-settings
+pytest
+httpx
+langchain-core==1.6.2
+langchain-openai==1.6.0
+uvicorn
