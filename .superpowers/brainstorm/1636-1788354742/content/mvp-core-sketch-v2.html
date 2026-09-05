@@ -1,0 +1,606 @@
+<style>
+  :root {
+    --ys-paper: #fffdf6;
+    --ys-ink: #222222;
+    --ys-yellow: #ffd84d;
+    --ys-blue: #4c8dff;
+    --ys-green: #55b978;
+    --ys-red: #ef6b5b;
+    --ys-muted: #6d6a62;
+    --ys-line: #d9d1bf;
+  }
+
+  .ys-board {
+    color: var(--ys-ink);
+    font-family: "Microsoft YaHei", "PingFang SC", sans-serif;
+  }
+
+  .ys-intro {
+    display: grid;
+    grid-template-columns: minmax(0, 1.4fr) minmax(240px, .6fr);
+    gap: 22px;
+    align-items: stretch;
+    margin: 18px 0 28px;
+  }
+
+  .ys-thesis,
+  .ys-style-card {
+    background: var(--ys-paper);
+    border: 2px solid var(--ys-ink);
+    box-shadow: 5px 5px 0 var(--ys-ink);
+    padding: 22px;
+  }
+
+  .ys-kicker {
+    display: inline-block;
+    padding: 5px 10px;
+    background: var(--ys-yellow);
+    border: 2px solid var(--ys-ink);
+    transform: rotate(-1.5deg);
+    font-size: 12px;
+    font-weight: 700;
+  }
+
+  .ys-title {
+    margin: 16px 0 10px;
+    font-family: KaiTi, STKaiti, serif;
+    font-size: clamp(30px, 5vw, 54px);
+    line-height: 1.05;
+    font-weight: 700;
+  }
+
+  .ys-lead {
+    max-width: 720px;
+    margin: 0;
+    color: var(--ys-muted);
+    font-size: 15px;
+    line-height: 1.75;
+  }
+
+  .ys-style-card h3 {
+    margin: 0 0 12px;
+  }
+
+  .ys-style-card ul {
+    margin: 0;
+    padding-left: 19px;
+    color: var(--ys-muted);
+    line-height: 1.8;
+    font-size: 13px;
+  }
+
+  .ys-swatches {
+    display: flex;
+    gap: 7px;
+    margin-top: 15px;
+  }
+
+  .ys-swatch {
+    width: 34px;
+    height: 22px;
+    border: 2px solid var(--ys-ink);
+  }
+
+  .ys-flow-label {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 0 0 14px;
+    font-weight: 700;
+  }
+
+  .ys-flow-label::after {
+    content: "";
+    flex: 1;
+    height: 2px;
+    background: repeating-linear-gradient(90deg, var(--ys-ink) 0 10px, transparent 10px 16px);
+  }
+
+  .ys-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(260px, 1fr));
+    gap: 24px;
+  }
+
+  .ys-screen-wrap {
+    min-width: 0;
+  }
+
+  .ys-screen-label {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    margin-bottom: 8px;
+    font-size: 13px;
+    font-weight: 700;
+  }
+
+  .ys-screen-label span:last-child {
+    color: var(--ys-muted);
+    font-size: 11px;
+    font-weight: 400;
+  }
+
+  .ys-phone {
+    position: relative;
+    min-height: 585px;
+    overflow: hidden;
+    background:
+      linear-gradient(rgba(76,141,255,.055) 1px, transparent 1px),
+      var(--ys-paper);
+    background-size: 100% 26px;
+    border: 3px solid var(--ys-ink);
+    border-radius: 28px;
+    box-shadow: 7px 7px 0 var(--ys-ink);
+  }
+
+  .ys-status {
+    display: flex;
+    justify-content: space-between;
+    padding: 13px 17px 8px;
+    font-size: 10px;
+    font-weight: 700;
+  }
+
+  .ys-nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 9px 17px;
+    border-bottom: 2px solid var(--ys-ink);
+    background: rgba(255,253,246,.9);
+  }
+
+  .ys-brand {
+    font-family: KaiTi, STKaiti, serif;
+    font-weight: 700;
+    font-size: 18px;
+  }
+
+  .ys-round-icon {
+    display: grid;
+    place-items: center;
+    width: 30px;
+    height: 30px;
+    border: 2px solid var(--ys-ink);
+    border-radius: 50%;
+    background: var(--ys-yellow);
+    font-size: 13px;
+    font-weight: 700;
+  }
+
+  .ys-content {
+    padding: 20px 18px 24px;
+  }
+
+  .ys-bubble {
+    position: relative;
+    width: fit-content;
+    max-width: 88%;
+    padding: 10px 13px;
+    border: 2px solid var(--ys-ink);
+    border-radius: 14px;
+    background: #fff;
+    font-family: KaiTi, STKaiti, serif;
+    font-weight: 700;
+    line-height: 1.35;
+  }
+
+  .ys-bubble::after {
+    content: "";
+    position: absolute;
+    left: 28px;
+    bottom: -9px;
+    width: 14px;
+    height: 14px;
+    background: #fff;
+    border-right: 2px solid var(--ys-ink);
+    border-bottom: 2px solid var(--ys-ink);
+    transform: rotate(45deg);
+  }
+
+  .ys-mascot {
+    display: grid;
+    place-items: center;
+    width: 84px;
+    height: 84px;
+    margin: 18px 8px 10px auto;
+    border: 3px solid var(--ys-ink);
+    border-radius: 46% 54% 52% 48%;
+    background: var(--ys-blue);
+    box-shadow: 4px 4px 0 var(--ys-ink);
+    color: white;
+    font-family: KaiTi, STKaiti, serif;
+    font-size: 30px;
+    transform: rotate(4deg);
+  }
+
+  .ys-input {
+    min-height: 118px;
+    margin-top: 18px;
+    padding: 14px;
+    border: 2px solid var(--ys-ink);
+    border-radius: 13px;
+    background: white;
+    color: var(--ys-muted);
+    font-size: 13px;
+    line-height: 1.6;
+    box-shadow: 3px 3px 0 var(--ys-line);
+  }
+
+  .ys-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 7px;
+    margin: 12px 0 16px;
+  }
+
+  .ys-chip {
+    padding: 5px 9px;
+    border: 1.5px solid var(--ys-ink);
+    border-radius: 999px;
+    background: white;
+    font-size: 10px;
+  }
+
+  .ys-btn {
+    display: block;
+    width: 100%;
+    padding: 13px 15px;
+    border: 2px solid var(--ys-ink);
+    border-radius: 12px;
+    background: var(--ys-yellow);
+    box-shadow: 0 4px 0 var(--ys-ink);
+    text-align: center;
+    font-weight: 800;
+    font-size: 14px;
+  }
+
+  .ys-meta-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    margin-bottom: 16px;
+    font-size: 11px;
+    font-weight: 700;
+  }
+
+  .ys-progress {
+    flex: 1;
+    height: 10px;
+    overflow: hidden;
+    border: 2px solid var(--ys-ink);
+    border-radius: 999px;
+    background: white;
+  }
+
+  .ys-progress > i {
+    display: block;
+    height: 100%;
+    width: 40%;
+    background: var(--ys-blue);
+  }
+
+  .ys-question {
+    margin: 12px 0 15px;
+    font-size: 19px;
+    line-height: 1.5;
+    font-weight: 800;
+  }
+
+  .ys-type {
+    display: inline-block;
+    padding: 4px 8px;
+    border: 1.5px solid var(--ys-ink);
+    background: #fff;
+    font-size: 10px;
+    font-weight: 700;
+    transform: rotate(-1deg);
+  }
+
+  .ys-option {
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+    margin: 9px 0;
+    padding: 11px;
+    border: 2px solid var(--ys-ink);
+    border-radius: 11px;
+    background: white;
+    font-size: 12px;
+    line-height: 1.45;
+  }
+
+  .ys-option strong {
+    display: grid;
+    place-items: center;
+    flex: 0 0 24px;
+    height: 24px;
+    border: 1.5px solid var(--ys-ink);
+    border-radius: 50%;
+    background: var(--ys-paper);
+  }
+
+  .ys-option.is-picked { background: #eaf1ff; box-shadow: 3px 3px 0 var(--ys-blue); }
+  .ys-option.is-right { background: #e8f8ec; box-shadow: 3px 3px 0 var(--ys-green); }
+  .ys-option.is-wrong { background: #fff0ed; box-shadow: 3px 3px 0 var(--ys-red); }
+
+  .ys-feedback {
+    margin-top: 16px;
+    padding: 13px;
+    border: 2px solid var(--ys-ink);
+    background: #fff;
+    box-shadow: 4px 4px 0 var(--ys-ink);
+    transform: rotate(-.5deg);
+  }
+
+  .ys-feedback.correct { border-left: 8px solid var(--ys-green); }
+  .ys-feedback.wrong { border-left: 8px solid var(--ys-red); }
+  .ys-feedback h4 { margin: 0 0 6px; font-family: KaiTi, STKaiti, serif; font-size: 17px; }
+  .ys-feedback p { margin: 0; color: var(--ys-muted); font-size: 11px; line-height: 1.55; }
+
+  .ys-loading {
+    display: grid;
+    place-items: center;
+    min-height: 430px;
+    text-align: center;
+  }
+
+  .ys-stack {
+    position: relative;
+    width: 150px;
+    height: 128px;
+    margin-bottom: 20px;
+  }
+
+  .ys-sheet {
+    position: absolute;
+    inset: 12px 5px 0 20px;
+    border: 2px solid var(--ys-ink);
+    background: white;
+    box-shadow: 4px 4px 0 var(--ys-ink);
+  }
+
+  .ys-sheet:nth-child(2) { transform: rotate(-5deg) translate(-9px, 3px); background: #eaf1ff; }
+  .ys-sheet:nth-child(3) { transform: rotate(6deg) translate(8px, 2px); background: #fff2b8; }
+  .ys-sheet:last-child { display:grid; place-items:center; transform: rotate(-1deg); font-size:42px; }
+
+  .ys-loading h3 { margin: 0 0 8px; font-family: KaiTi, STKaiti, serif; font-size: 22px; }
+  .ys-loading p { margin: 0; color: var(--ys-muted); font-size: 12px; line-height: 1.6; }
+  .ys-dots { margin-top: 18px; letter-spacing: 7px; font-size: 22px; }
+
+  .ys-score {
+    display: grid;
+    place-items: center;
+    width: 145px;
+    height: 145px;
+    margin: 10px auto 18px;
+    border: 9px solid var(--ys-yellow);
+    border-radius: 50%;
+    outline: 3px solid var(--ys-ink);
+    background: white;
+    transform: rotate(-2deg);
+  }
+
+  .ys-score strong { font-size: 40px; line-height: 1; }
+  .ys-score span { font-size: 11px; color: var(--ys-muted); }
+
+  .ys-report-title {
+    margin: 2px 0 4px;
+    text-align: center;
+    font-family: KaiTi, STKaiti, serif;
+    font-size: 23px;
+  }
+
+  .ys-report-sub { text-align:center; color:var(--ys-muted); font-size:11px; }
+
+  .ys-two-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin: 15px 0;
+  }
+
+  .ys-note {
+    min-height: 88px;
+    padding: 10px;
+    border: 2px solid var(--ys-ink);
+    background: white;
+    font-size: 10px;
+    line-height: 1.55;
+  }
+
+  .ys-note.good { background: #e8f8ec; transform: rotate(-1deg); }
+  .ys-note.weak { background: #fff0ed; transform: rotate(1deg); }
+  .ys-note b { display:block; margin-bottom:5px; font-size:12px; }
+
+  .ys-summary {
+    padding: 12px;
+    border-left: 5px solid var(--ys-blue);
+    background: white;
+    font-size: 11px;
+    line-height: 1.65;
+  }
+
+  .ys-xp-pop {
+    position: absolute;
+    right: 12px;
+    top: 95px;
+    padding: 6px 9px;
+    border: 2px solid var(--ys-ink);
+    background: var(--ys-yellow);
+    font-family: KaiTi, STKaiti, serif;
+    font-weight: 800;
+    transform: rotate(7deg);
+  }
+
+  .ys-footer-choice {
+    margin-top: 30px;
+  }
+
+  .ys-footer-choice .option {
+    border-width: 2px;
+  }
+
+  @media (max-width: 980px) {
+    .ys-grid { grid-template-columns: repeat(2, minmax(250px, 1fr)); }
+  }
+
+  @media (max-width: 680px) {
+    .ys-intro { grid-template-columns: 1fr; }
+    .ys-grid { grid-template-columns: 1fr; }
+    .ys-phone { min-height: 560px; }
+  }
+</style>
+
+<div class="ys-board">
+  <div class="ys-intro">
+    <section class="ys-thesis">
+      <span class="ys-kicker">MVP 视觉草图 · 待确认</span>
+      <h2 class="ys-title">职场学习，也可以像翻一页爆笑漫画</h2>
+      <p class="ys-lead">推荐方向：<strong>职场涂鸦手账 × 四格漫画分镜</strong>。保留成熟的信息层级，用歪斜纸片、吐槽气泡、黑色粗线和瞬时表情制造轻松感；不照搬《阿衰》角色，只提取校园漫画的幽默节奏。</p>
+    </section>
+
+    <aside class="ys-style-card">
+      <h3>视觉语言</h3>
+      <ul>
+        <li>标题：楷体手写感；正文：清晰黑体</li>
+        <li>结构：作业本横线、便签纸、漫画粗描边</li>
+        <li>动效：只在答题反馈和通关时“弹一下”</li>
+        <li>原创吉祥物：“摸鱼鱼”，负责吐槽和提示</li>
+      </ul>
+      <div class="ys-swatches" aria-label="配色样本">
+        <span class="ys-swatch" style="background:#fffdf6"></span>
+        <span class="ys-swatch" style="background:#ffd84d"></span>
+        <span class="ys-swatch" style="background:#4c8dff"></span>
+        <span class="ys-swatch" style="background:#55b978"></span>
+        <span class="ys-swatch" style="background:#ef6b5b"></span>
+      </div>
+    </aside>
+  </div>
+
+  <div class="ys-flow-label">核心流程：输入 → 生成 → 作答 → 即时反馈 → 复盘</div>
+
+  <div class="ys-grid">
+    <section class="ys-screen-wrap">
+      <div class="ys-screen-label"><span>01 首页输入</span><span>单一主任务</span></div>
+      <div class="ys-phone">
+        <div class="ys-status"><span>09:41</span><span>● ● ▰</span></div>
+        <div class="ys-nav"><span class="ys-brand">开卷有戏</span><span class="ys-round-icon">?</span></div>
+        <div class="ys-content">
+          <div class="ys-bubble">今天摸鱼……不，学点啥？</div>
+          <div class="ys-mascot">鱼</div>
+          <div class="ys-input">我想弄懂 RAG 和传统搜索到底有什么区别，最好能结合工作中的知识库案例。</div>
+          <div class="ys-chips">
+            <span class="ys-chip">产品方法</span><span class="ys-chip">AI 基础</span><span class="ys-chip">汇报表达</span>
+          </div>
+          <div class="ys-btn">开始生成闯关题</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="ys-screen-wrap">
+      <div class="ys-screen-label"><span>02 AI 生成中</span><span>等待有解释</span></div>
+      <div class="ys-phone">
+        <div class="ys-status"><span>09:42</span><span>● ● ▰</span></div>
+        <div class="ys-nav"><span class="ys-brand">正在备题</span><span class="ys-round-icon">×</span></div>
+        <div class="ys-content ys-loading">
+          <div>
+            <div class="ys-stack"><span class="ys-sheet"></span><span class="ys-sheet"></span><span class="ys-sheet"></span><span class="ys-sheet">AI</span></div>
+            <h3>AI 正在翻资料、划重点</h3>
+            <p>预计生成 5 道题<br>覆盖概念、易错点和工作场景</p>
+            <div class="ys-dots">● ● ●</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="ys-screen-wrap">
+      <div class="ys-screen-label"><span>03 答题选择</span><span>专注单题</span></div>
+      <div class="ys-phone">
+        <div class="ys-status"><span>09:43</span><span>● ● ▰</span></div>
+        <div class="ys-nav"><span class="ys-brand">RAG 入门闯关</span><span class="ys-round-icon">Ⅱ</span></div>
+        <div class="ys-content">
+          <div class="ys-meta-row"><span>第 2 / 5 题</span><div class="ys-progress"><i></i></div><span>40 XP</span></div>
+          <span class="ys-type">单选题 · 易错点</span>
+          <div class="ys-question">RAG 与传统搜索最核心的区别是什么？</div>
+          <div class="ys-option"><strong>A</strong><span>只负责找到网页链接</span></div>
+          <div class="ys-option is-picked"><strong>B</strong><span>检索资料后，让模型结合资料生成回答</span></div>
+          <div class="ys-option"><strong>C</strong><span>完全不需要任何外部信息</span></div>
+          <div class="ys-option"><strong>D</strong><span>只能用于图片搜索</span></div>
+          <div class="ys-btn" style="margin-top:16px">提交答案</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="ys-screen-wrap">
+      <div class="ys-screen-label"><span>04 答对反馈</span><span>奖励 + 讲解</span></div>
+      <div class="ys-phone">
+        <div class="ys-xp-pop">+20 XP!</div>
+        <div class="ys-status"><span>09:44</span><span>● ● ▰</span></div>
+        <div class="ys-nav"><span class="ys-brand">回答结果</span><span class="ys-round-icon">✓</span></div>
+        <div class="ys-content">
+          <div class="ys-bubble">漂亮！这次没被概念绕进去。</div>
+          <div class="ys-mascot" style="background:var(--ys-green)">耶</div>
+          <div class="ys-option is-right"><strong>B</strong><span>检索资料后，让模型结合资料生成回答</span></div>
+          <div class="ys-feedback correct">
+            <h4>答对了，关键在“先查再答”</h4>
+            <p>传统搜索把资料交给你；RAG 先检索相关资料，再把资料作为上下文交给大模型，由模型组织成回答。</p>
+          </div>
+          <div class="ys-btn" style="margin-top:18px">下一题</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="ys-screen-wrap">
+      <div class="ys-screen-label"><span>05 答错反馈</span><span>不惩罚式纠错</span></div>
+      <div class="ys-phone">
+        <div class="ys-status"><span>09:45</span><span>● ● ▰</span></div>
+        <div class="ys-nav"><span class="ys-brand">回答结果</span><span class="ys-round-icon">!</span></div>
+        <div class="ys-content">
+          <div class="ys-bubble">踩坑了，但这个坑现在归你了。</div>
+          <div class="ys-mascot" style="background:var(--ys-red)">晕</div>
+          <div class="ys-option is-wrong"><strong>A</strong><span>只负责找到网页链接</span></div>
+          <div class="ys-option is-right"><strong>B</strong><span>检索资料后，让模型结合资料生成回答</span></div>
+          <div class="ys-feedback wrong">
+            <h4>容易混淆：搜索结果 ≠ 最终回答</h4>
+            <p>你选的是传统搜索的特点。RAG 会把检索到的资料继续交给模型加工，因此输出通常是一段结合资料的回答。</p>
+          </div>
+          <div class="ys-btn" style="margin-top:18px">记住了，下一题</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="ys-screen-wrap">
+      <div class="ys-screen-label"><span>06 通关复盘</span><span>结果可行动</span></div>
+      <div class="ys-phone">
+        <div class="ys-status"><span>09:48</span><span>● ● ▰</span></div>
+        <div class="ys-nav"><span class="ys-brand">本轮复盘</span><span class="ys-round-icon">↗</span></div>
+        <div class="ys-content">
+          <h3 class="ys-report-title">RAG 入门 · 通关！</h3>
+          <div class="ys-report-sub">5 题用时 3 分 26 秒 · 获得 80 XP</div>
+          <div class="ys-score"><strong>80%</strong><span>知识掌握度</span></div>
+          <div class="ys-two-col">
+            <div class="ys-note good"><b>已经掌握</b>RAG 基本结构<br>检索与生成关系</div>
+            <div class="ys-note weak"><b>还需补一补</b>向量检索<br>知识库更新机制</div>
+          </div>
+          <div class="ys-summary"><strong>三句话带走：</strong><br>先检索，再生成；资料决定回答边界；知识库质量影响最终效果。</div>
+          <div class="ys-btn" style="margin-top:16px">再闯一轮巩固</div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <div class="ys-footer-choice options">
+    <div class="option" data-choice="approve-mvp-comic-direction" onclick="toggleSelect(this)">
+      <div class="letter">✓</div>
+      <div class="content">
+        <h3>认可这套“职场涂鸦漫画”方向</h3>
+        <p>点击可标记选择；也可以直接回到对话中告诉我需要调整的页面、颜色或漫画感强度。</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+
