@@ -3,9 +3,7 @@ import json
 
 import httpx
 import pytest
-from fastapi.testclient import TestClient
 from langchain_openai import ChatOpenAI
-from app.main import app
 from app.services import quiz_service
 
 
@@ -51,11 +49,15 @@ def provider(monkeypatch):
         client.close()
 
 
-def generate(count=5):
-    return TestClient(app).post('/api/v1/quiz/generate', json={'user_input':'学习 RAG','question_count':count,'difficulty':'mixed'})
+@pytest.fixture
+def generate(client, login):
+    headers, _ = login()
+    def call(count=5):
+        return client.post('/api/v1/quiz/generate', headers=headers, json={'user_input':'学习 RAG','question_count':count,'difficulty':'mixed'})
+    return call
 
 
-def test_uses_json_object_and_returns_unique_topics(provider):
+def test_uses_json_object_and_returns_unique_topics(provider, generate):
     requests = provider([quiz_data()])
     response = generate()
     assert response.status_code == 200
@@ -67,7 +69,7 @@ def test_uses_json_object_and_returns_unique_topics(provider):
 
 
 @pytest.mark.parametrize('variant', ['exact', 'punctuation', 'near'])
-def test_rejects_duplicate_stems_and_regenerates(provider, variant):
+def test_rejects_duplicate_stems_and_regenerates(provider, variant, generate):
     bad = quiz_data()
     stem = bad['questions'][0]['stem']
     bad['questions'][1]['stem'] = {'exact': stem, 'punctuation': 'RAG 如何把检索结果用于生成回答!!!', 'near':'RAG 如何把检索结果用于生成答案？'}[variant]
@@ -79,7 +81,7 @@ def test_rejects_duplicate_stems_and_regenerates(provider, variant):
 
 
 @pytest.mark.parametrize('defect', ['count', 'answer', 'empty_explanation', 'same_point', 'same_options'])
-def test_retries_invalid_quiz_instead_of_returning_it(provider, defect):
+def test_retries_invalid_quiz_instead_of_returning_it(provider, defect, generate):
     bad = quiz_data()
     if defect == 'count': bad['questions'].pop()
     if defect == 'answer': bad['questions'][0]['answer'] = ['Z']
@@ -95,7 +97,7 @@ def test_retries_invalid_quiz_instead_of_returning_it(provider, defect):
     assert len(requests) == 2
 
 
-def test_repeated_bad_output_fails_explicitly_without_local_template(provider):
+def test_repeated_bad_output_fails_explicitly_without_local_template(provider, generate):
     bad = quiz_data()
     bad['questions'] = [copy.deepcopy(bad['questions'][0]) for _ in range(5)]
     requests = provider([bad])
@@ -106,7 +108,7 @@ def test_repeated_bad_output_fails_explicitly_without_local_template(provider):
     assert len(requests) == 2
 
 
-def test_empty_or_malformed_json_is_retried(provider):
+def test_empty_or_malformed_json_is_retried(provider, generate):
     requests = provider(['not JSON', quiz_data(3)])
     response = generate(3)
     assert response.status_code == 200
@@ -114,14 +116,14 @@ def test_empty_or_malformed_json_is_retried(provider):
     assert len(requests) == 2
 
 
-def test_missing_model_returns_configuration_error(monkeypatch):
+def test_missing_model_returns_configuration_error(monkeypatch, generate):
     monkeypatch.setattr(quiz_service, 'get_llm', lambda: None)
     response = generate()
     assert response.status_code == 503
     assert response.json()['data'] is None
 
 
-def test_auth_failure_never_fakes_a_success(provider):
+def test_auth_failure_never_fakes_a_success(provider, generate):
     requests = provider([401])
     response = generate()
     assert response.status_code == 502
@@ -129,7 +131,7 @@ def test_auth_failure_never_fakes_a_success(provider):
     assert len(requests) == 1
 
 
-def test_transient_provider_failure_retries_and_returns_valid_quiz(provider):
+def test_transient_provider_failure_retries_and_returns_valid_quiz(provider, generate):
     requests = provider([500, quiz_data()])
     response = generate()
     assert response.status_code == 200

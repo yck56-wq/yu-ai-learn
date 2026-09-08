@@ -1,0 +1,13 @@
+{
+  "real_wechat_login": true,
+  "real_model": true,
+  "question_count": 5,
+  "unique_questions": 5,
+  "correct": 4,
+  "accuracy": 80,
+  "xp_added": 80,
+  "repeated_report_idempotent": true,
+  "history_readback": true,
+  "quiz_id": "quiz_8d34a1ea17364c01998ea5e4dcfba180",
+  "timestamp": "2026-09-07T13:15:45.245Z"
+}
