@@ -1,0 +1,6 @@
+.ys-tabbar-wrap{position:fixed;z-index:20;right:0;bottom:0;left:0;padding:7px 12px calc(7px + env(safe-area-inset-bottom));background:linear-gradient(transparent,#fffdf6 28%)}
+.ys-tabbar{display:flex;min-height:54px;padding:4px;border:2px solid #222;border-radius:17px;background:#fff;box-shadow:4px 4px 0 #222}
+.ys-tabbar-item{display:flex;flex:1;align-items:center;justify-content:center;gap:5px;border-radius:11px;color:#6d6a62;font-size:11px;font-weight:700}
+.ys-tabbar-item.is-selected{background:#ffd84d;color:#222;box-shadow:inset 0 0 0 1.5px #222}
+.ys-tabbar-icon{display:flex;width:23px;height:23px;align-items:center;justify-content:center;border:1.5px solid #222;border-radius:48% 52% 45% 55%;background:#fffdf6;color:#222;font-family:KaiTi,STKaiti,serif;transform:rotate(-3deg)}
+.ys-tabbar-item:nth-child(2).is-selected{background:#eaf1ff}.ys-tabbar-item:nth-child(2) .ys-tabbar-icon{background:#4c8dff;color:#fff}.ys-tabbar-text{white-space:nowrap}

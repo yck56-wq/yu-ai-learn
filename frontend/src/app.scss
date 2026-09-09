@@ -1,0 +1,268 @@
+// 按 mvp-core-sketch-v2.html 的 375px 逻辑画布还原；Taro 统一换算为 rpx/rem。
+$paper: #fffdf6;
+$ink: #222222;
+$yellow: #ffd84d;
+$blue: #4c8dff;
+$green: #55b978;
+$red: #ef6b5b;
+$muted: #6d6a62;
+
+@import './custom-tab-bar/index.scss';
+
+page { background: $paper; }
+.ys-screen {
+  position: relative;
+  min-height: 100vh;
+  box-sizing: border-box;
+  padding-bottom: env(safe-area-inset-bottom);
+  background: linear-gradient(rgba(76,141,255,.055) 1px, transparent 1px), $paper;
+  background-size: 100% 26px;
+  color: $ink;
+  font-family: 'Microsoft YaHei', 'PingFang SC', sans-serif;
+  font-size: 16px;
+  line-height: 1.5;
+}
+.ys-screen view, .ys-screen button, .ys-screen textarea { box-sizing: border-box; }
+.ys-screen button { margin: 0; color: $ink; font-family: inherit; }
+.ys-screen button::after { border: 0; }
+.ys-system-space { background: $paper; }
+.ys-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 9px 17px;
+  border-bottom: 2px solid $ink;
+  background: rgba(255,253,246,.9);
+}
+.ys-brand {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-family: KaiTi, STKaiti, serif;
+  font-weight: 700;
+  font-size: 18px;
+}
+.ys-screen .ys-round-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 30px;
+  width: 30px;
+  height: 30px;
+  padding: 0;
+  border: 2px solid $ink;
+  border-radius: 50%;
+  background: $yellow;
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 1;
+}
+.ys-content { padding: 20px 18px 28px; }
+.ys-bubble {
+  position: relative;
+  display: table;
+  max-width: 88%;
+  padding: 10px 13px;
+  border: 2px solid $ink;
+  border-radius: 14px;
+  background: #fff;
+  font-family: KaiTi, STKaiti, serif;
+  font-weight: 700;
+  line-height: 1.35;
+}
+.ys-bubble::after {
+  content: '';
+  position: absolute;
+  left: 28px;
+  bottom: -9px;
+  width: 14px;
+  height: 14px;
+  background: #fff;
+  border-right: 2px solid $ink;
+  border-bottom: 2px solid $ink;
+  transform: rotate(45deg);
+}
+.ys-mascot {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 84px;
+  height: 84px;
+  margin: 18px 8px 10px auto;
+  border: 3px solid $ink;
+  border-radius: 46% 54% 52% 48%;
+  background: $blue;
+  box-shadow: 4px 4px 0 $ink;
+  color: white;
+  font-family: KaiTi, STKaiti, serif;
+  font-size: 30px;
+  transform: rotate(4deg);
+}
+.ys-mascot-green { background: $green; }
+.ys-mascot-red { background: $red; }
+.ys-input {
+  margin-top: 18px;
+  padding: 14px;
+  border: 2px solid $ink;
+  border-radius: 13px;
+  background: #fff;
+  box-shadow: 3px 3px 0 #d9d1bf;
+}
+.ys-textarea {
+  display: block;
+  width: 100%;
+  height: 118px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: $ink;
+  font-family: inherit;
+  font-size: 13px;
+  line-height: 1.6;
+}
+.ys-placeholder { color: $muted; }
+.ys-chips { display: flex; flex-wrap: wrap; gap: 7px; margin: 12px 0 16px; }
+.ys-screen .ys-chip {
+  width: auto;
+  flex: 0 0 auto;
+  padding: 5px 9px;
+  border: 1.5px solid $ink;
+  border-radius: 999px;
+  background: #fff;
+  font-size: 10px;
+  line-height: 1.5;
+}
+.ys-screen .ys-btn {
+  display: block;
+  width: 100%;
+  padding: 13px 15px;
+  border: 2px solid $ink;
+  border-radius: 12px;
+  background: $yellow;
+  box-shadow: 0 4px 0 $ink;
+  text-align: center;
+  font-weight: 800;
+  font-size: 14px;
+  line-height: 1.5;
+}
+.ys-screen .ys-btn.is-disabled { color: $muted; background: #fff2b8; }
+.ys-screen .ys-btn:active { transform: translateY(2px); box-shadow: 0 2px 0 $ink; }
+.ys-screen .ys-next { margin-top: 18px; }
+.ys-meta-row { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 16px; font-size: 11px; font-weight: 700; }
+.ys-progress { flex: 1; height: 10px; overflow: hidden; border: 2px solid $ink; border-radius: 999px; background: #fff; }
+.ys-progress-fill { height: 100%; background: $blue; transition: width .2s ease; }
+.ys-question { margin: 12px 0 15px; font-size: 19px; line-height: 1.5; font-weight: 800; overflow-wrap: anywhere; }
+.ys-type { display: inline-block; padding: 4px 8px; border: 1.5px solid $ink; background: #fff; font-size: 10px; font-weight: 700; transform: rotate(-1deg); }
+.ys-hint { margin-bottom: 12px; font-size: 12px; color: $muted; }
+.ys-screen .ys-option {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  width: 100%;
+  margin: 9px 0;
+  padding: 11px;
+  border: 2px solid $ink;
+  border-radius: 11px;
+  background: #fff;
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 1.45;
+  text-align: left;
+  white-space: normal;
+}
+.ys-option-key { display: flex; align-items: center; justify-content: center; flex: 0 0 24px; height: 24px; box-sizing: border-box; border: 1.5px solid $ink; border-radius: 50%; background: $paper; font-weight: 700; }
+.ys-option-text { flex: 1; min-width: 0; padding-top: 3px; overflow-wrap: anywhere; }
+.ys-screen .ys-option.is-picked { background: #eaf1ff; box-shadow: 3px 3px 0 $blue; }
+.ys-screen .ys-option.is-right { background: #e8f8ec; box-shadow: 3px 3px 0 $green; }
+.ys-screen .ys-option.is-wrong { background: #fff0ed; box-shadow: 3px 3px 0 $red; }
+.ys-feedback { margin-top: 16px; padding: 13px; border: 2px solid $ink; background: #fff; box-shadow: 4px 4px 0 $ink; transform: rotate(-.5deg); }
+.ys-feedback.correct { border-left: 8px solid $green; }
+.ys-feedback.wrong { border-left: 8px solid $red; }
+.ys-feedback-title { margin: 0 0 6px; font-family: KaiTi, STKaiti, serif; font-size: 17px; font-weight: 700; }
+.ys-feedback-copy { color: $muted; font-size: 11px; line-height: 1.55; white-space: pre-wrap; overflow-wrap: anywhere; }
+.ys-screen .ys-expand { padding: 8px 0 0; border: 0; background: transparent; text-align: right; font-size: 10px; line-height: 1.5; color: $muted; }
+.ys-result { position: relative; }
+.ys-xp-pop { position: absolute; z-index: 1; right: 12px; top: 4px; padding: 6px 9px; border: 2px solid $ink; background: $yellow; font-family: KaiTi, STKaiti, serif; font-weight: 800; transform: rotate(7deg); animation: ys-pop .25s ease-out; }
+.ys-loading { display: flex; align-items: center; justify-content: center; min-height: 430px; text-align: center; }
+.ys-stack { position: relative; width: 150px; height: 128px; margin: 0 auto 20px; }
+.ys-sheet { position: absolute; top: 12px; right: 5px; bottom: 0; left: 20px; border: 2px solid $ink; background: #fff; box-shadow: 4px 4px 0 $ink; }
+.ys-sheet-blue { transform: rotate(-5deg) translate(-9px,3px); background: #eaf1ff; }
+.ys-sheet-yellow { transform: rotate(6deg) translate(8px,2px); background: #fff2b8; }
+.ys-sheet-front { display: flex; align-items: center; justify-content: center; transform: rotate(-1deg); font-size: 42px; }
+.ys-loading-title { margin-bottom: 8px; font-family: KaiTi, STKaiti, serif; font-size: 22px; font-weight: 700; }
+.ys-loading-copy { color: $muted; font-size: 12px; line-height: 1.6; white-space: pre-line; }
+.ys-dots { margin-top: 18px; letter-spacing: 7px; font-size: 22px; }
+.ys-score { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; width: 145px; height: 145px; margin: 18px auto; border: 9px solid $yellow; border-radius: 50%; outline: 3px solid $ink; background: #fff; transform: rotate(-2deg); animation: ys-pop .25s ease-out; }
+.ys-score-number { font-size: 40px; font-weight: 700; line-height: 1; }
+.ys-score-label { font-size: 11px; color: $muted; }
+.ys-report-title { margin: 2px 0 4px; text-align: center; font-family: KaiTi, STKaiti, serif; font-size: 23px; font-weight: 700; }
+.ys-report-sub { text-align: center; color: $muted; font-size: 11px; }
+.ys-two-col { display: flex; gap: 10px; margin: 15px 0; }
+.ys-note { flex: 1; min-width: 0; min-height: 88px; padding: 10px; border: 2px solid $ink; background: #fff; font-size: 10px; line-height: 1.55; overflow-wrap: anywhere; }
+.ys-note.good { background: #e8f8ec; transform: rotate(-1deg); }
+.ys-note.weak { background: #fff0ed; transform: rotate(1deg); }
+.ys-note-title { display: block; margin-bottom: 5px; font-size: 12px; font-weight: 700; }
+.ys-summary { padding: 12px; border-left: 5px solid $blue; background: #fff; font-size: 11px; line-height: 1.65; overflow-wrap: anywhere; }
+.ys-summary-title { font-weight: 700; }
+.ys-cases { display: flex; gap: 12px; margin-top: 22px; }
+.ys-screen .ys-case { flex: 1; min-width: 0; padding: 12px 9px; border: 2px solid $ink; border-radius: 11px; background: #fff; box-shadow: 3px 3px 0 #d9d1bf; text-align: left; line-height: 1.5; }
+.ys-case-title { display: block; font-size: 13px; font-weight: 700; }
+.ys-case-meta { display: block; margin-top: 5px; font-size: 10px; color: $muted; }
+.ys-error { margin: 12px 0; padding: 10px; border-left: 4px solid $red; background: #fff0ed; color: $ink; font-size: 12px; }
+.ys-tab-screen { padding-bottom: calc(84px + env(safe-area-inset-bottom)); }
+.ys-preview-note { margin-bottom: 14px; padding: 8px 10px; border: 1.5px dashed $ink; background: #fff2b8; font-size: 10px; font-weight: 700; text-align: center; }
+.ys-page-note { margin: 16px 18px 0; }
+.ys-user-strip { display: flex; align-items: center; gap: 9px; margin-bottom: 18px; padding: 9px 10px; border: 2px solid $ink; border-radius: 12px; background: #fff; box-shadow: 3px 3px 0 #d9d1bf; transform: rotate(-.4deg); }
+.ys-mini-avatar { display: flex; flex: 0 0 35px; width: 35px; height: 35px; align-items: center; justify-content: center; border: 2px solid $ink; border-radius: 48% 52% 46% 54%; background: $blue; color: #fff; font-family: KaiTi, STKaiti, serif; font-size: 17px; font-weight: 700; }
+.ys-user-copy { display: flex; flex: 1; min-width: 0; flex-direction: column; }
+.ys-user-greeting { overflow: hidden; font-size: 12px; font-weight: 800; text-overflow: ellipsis; white-space: nowrap; }
+.ys-user-xp { margin-top: 2px; color: $muted; font-size: 9px; }
+.ys-screen .ys-text-button { width: auto; flex: 0 0 auto; padding: 4px 7px; border: 1.5px solid $ink; border-radius: 8px; background: $yellow; font-size: 9px; font-weight: 700; line-height: 1.4; }
+.ys-screen .ys-secondary { margin-bottom: 10px; background: #fff; box-shadow: 0 3px 0 $ink; }
+.ys-screen .ys-pending-card { display: flex; width: 100%; align-items: center; justify-content: space-between; gap: 12px; margin: -4px 0 18px; padding: 11px 12px; border: 2px solid $ink; border-radius: 11px; background: #fff0ed; box-shadow: 3px 3px 0 $red; text-align: left; line-height: 1.4; transform: rotate(.4deg); }
+.ys-pending-card > view { display: flex; min-width: 0; flex-direction: column; }
+.ys-pending-title { font-size: 12px; font-weight: 800; }
+.ys-pending-copy { margin-top: 3px; color: $muted; font-size: 9px; }
+.ys-pending-arrow { flex: 0 0 auto; font-size: 20px; font-weight: 800; }
+.ys-history-heading { display: flex; align-items: flex-start; justify-content: space-between; gap: 18px; margin-bottom: 18px; }
+.ys-section-kicker { display: inline-block; padding: 3px 7px; border: 1.5px solid $ink; background: $yellow; font-size: 9px; font-weight: 700; transform: rotate(-1deg); }
+.ys-section-title { margin-top: 8px; font-family: KaiTi, STKaiti, serif; font-size: 22px; font-weight: 700; line-height: 1.25; }
+.ys-history-total { display: flex; align-items: baseline; gap: 2px; padding: 8px 10px; border: 2px solid $ink; background: #eaf1ff; font-size: 26px; font-weight: 800; line-height: 1; transform: rotate(3deg); }
+.ys-history-total text { font-size: 10px; }
+.ys-history-list { display: flex; flex-direction: column; gap: 12px; }
+.ys-screen .ys-history-card { display: flex; width: 100%; align-items: center; gap: 10px; padding: 12px 10px; border: 2px solid $ink; border-radius: 12px; background: #fff; box-shadow: 4px 4px 0 #d9d1bf; text-align: left; line-height: 1.4; }
+.ys-history-card:nth-child(even) { transform: rotate(.4deg); }
+.ys-history-index { display: flex; flex: 0 0 31px; width: 31px; height: 31px; align-items: center; justify-content: center; border: 1.5px solid $ink; border-radius: 50%; background: $paper; font-size: 9px; font-weight: 800; }
+.ys-history-main { display: flex; flex: 1; min-width: 0; flex-direction: column; }
+.ys-history-title { overflow: hidden; font-family: KaiTi, STKaiti, serif; font-size: 15px; font-weight: 700; text-overflow: ellipsis; white-space: nowrap; }
+.ys-history-meta { margin-top: 4px; color: $muted; font-size: 9px; white-space: normal; }
+.ys-accuracy-stamp { display: flex; flex: 0 0 46px; width: 46px; height: 46px; align-items: center; justify-content: center; border: 2px solid $ink; border-radius: 50%; background: #fff0ed; font-family: KaiTi, STKaiti, serif; font-size: 14px; font-weight: 800; transform: rotate(-6deg); }
+.ys-accuracy-stamp.is-good { background: #e8f8ec; }
+.ys-empty-card { padding: 18px 0; }
+.ys-profile-card { display: flex; align-items: center; gap: 12px; padding: 14px; border: 2px solid $ink; border-radius: 16px; background: #fff; box-shadow: 5px 5px 0 $ink; transform: rotate(-.5deg); }
+.ys-profile-avatar { flex: 0 0 65px; width: 65px; height: 65px; overflow: hidden; border: 3px solid $ink; border-radius: 47% 53% 51% 49%; background: $blue; }
+.ys-default-avatar { display: flex; align-items: center; justify-content: center; color: #fff; font-family: KaiTi, STKaiti, serif; font-size: 26px; font-weight: 700; transform: rotate(3deg); }
+.ys-profile-copy { display: flex; flex: 1; min-width: 0; flex-direction: column; }
+.ys-profile-name { overflow: hidden; font-family: KaiTi, STKaiti, serif; font-size: 20px; font-weight: 700; text-overflow: ellipsis; white-space: nowrap; }
+.ys-profile-caption { margin-top: 3px; color: $muted; font-size: 9px; }
+.ys-nickname-input { width: 100%; height: 34px; padding: 0 8px; border: 2px solid $ink; border-radius: 8px; background: $paper; font-size: 13px; }
+.ys-screen .ys-small-button { width: auto; flex: 0 0 auto; padding: 5px 8px; border: 1.5px solid $ink; border-radius: 8px; background: $yellow; font-size: 9px; font-weight: 700; line-height: 1.5; }
+.ys-xp-ticket { display: flex; align-items: center; justify-content: space-between; margin: 20px 0 12px; padding: 14px 16px; border: 2px solid $ink; background: $yellow; box-shadow: 4px 4px 0 $ink; transform: rotate(.5deg); }
+.ys-xp-ticket > text { font-size: 11px; font-weight: 700; }
+.ys-xp-ticket > view { font-size: 28px; font-weight: 800; line-height: 1; }
+.ys-xp-ticket > view text { font-size: 11px; }
+.ys-stats-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+.ys-stat-card { min-width: 0; padding: 11px 7px; border: 2px solid $ink; background: #fff; text-align: center; }
+.ys-stat-card:nth-child(2) { background: #e8f8ec; transform: rotate(-1deg); }
+.ys-stat-card:nth-child(3) { background: #eaf1ff; transform: rotate(1deg); }
+.ys-stat-card > text { display: block; color: $muted; font-size: 8px; }
+.ys-stat-card > view { margin-top: 6px; font-size: 20px; font-weight: 800; }
+.ys-stat-card > view text { font-size: 8px; }
+.ys-screen .ys-profile-link { display: flex; width: 100%; align-items: center; justify-content: space-between; margin-top: 16px; padding: 13px; border: 2px solid $ink; border-radius: 11px; background: #fff; box-shadow: 3px 3px 0 #d9d1bf; text-align: left; line-height: 1.4; }
+.ys-profile-link > view { display: flex; min-width: 0; flex-direction: column; }
+.ys-profile-link-title { font-size: 13px; font-weight: 800; }
+.ys-profile-link-copy { margin-top: 3px; color: $muted; font-size: 9px; }
+@keyframes ys-pop { from { opacity: .5; scale: .85; } to { opacity: 1; scale: 1; } }
+@media (prefers-reduced-motion: reduce) { .ys-xp-pop, .ys-score { animation: none; } }
