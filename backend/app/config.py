@@ -1,3 +1,5 @@
+from pathlib import Path
+
 from pydantic_settings import BaseSettings, SettingsConfigDict
 class Settings(BaseSettings):
     deepseek_api_key: str = ''
@@ -11,5 +13,7 @@ class Settings(BaseSettings):
     wechat_app_id: str = ''
     wechat_app_secret: str = ''
     jwt_secret: str = ''
+    avatar_storage_dir: str = str(Path(__file__).resolve().parents[1] / 'uploads' / 'avatars')
+    public_base_url: str = ''
     model_config = SettingsConfigDict(env_file=('.env','backend/.env'), extra='ignore')
 settings=Settings()

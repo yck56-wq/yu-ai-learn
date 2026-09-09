@@ -10,3 +10,5 @@ aiomysql==0.3.2
 PyJWT>=2.10,<3
 pytest-asyncio==1.4.0
 pytest-cov==7.1.0
+python-multipart>=0.0.32,<0.1
+Pillow>=12.3,<13
