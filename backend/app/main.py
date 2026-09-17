@@ -31,7 +31,8 @@ async def database_error(request, exc):
     return JSONResponse(status_code=503, content={'code': 503, 'message': '数据服务暂时不可用，请稍后重试', 'data': None})
 @app.exception_handler(quiz_service.QuizGenerationError)
 def quiz_generation_error(request, exc):
-    return JSONResponse(status_code=exc.status_code, content={'code':4001,'message':str(exc),'data':None})
+    return JSONResponse(status_code=exc.status_code, content={'code': 4001, 'error_code': exc.error_code,
+                        'message': str(exc), 'data': None})
 @app.get('/api/v1/health')
 def health(): return {'code':0,'message':'ok','data':{'status':'healthy'}}
 @app.post('/api/v1/quiz/generate')

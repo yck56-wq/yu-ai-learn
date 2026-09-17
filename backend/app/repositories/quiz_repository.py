@@ -5,9 +5,18 @@ import aiomysql
 
 async def save_quiz(pool, user_id, user_input, quiz):
     async with pool.acquire() as conn, conn.cursor() as cur:
-        await cur.execute('''INSERT INTO quiz_sessions(quiz_id,user_id,title,summary,user_input,questions_json)
-            VALUES(%s,%s,%s,%s,%s,%s)''', (quiz['quiz_id'], user_id, quiz['title'], quiz['summary'],
-                                           user_input, json.dumps(quiz['questions'], ensure_ascii=False)))
+        try:
+            await cur.execute('''INSERT INTO quiz_sessions(quiz_id,user_id,title,summary,user_input,questions_json,sources_json,grounding_status)
+                VALUES(%s,%s,%s,%s,%s,%s,%s,%s)''', (quiz['quiz_id'], user_id, quiz['title'], quiz['summary'],
+                                               user_input, json.dumps(quiz['questions'], ensure_ascii=False),
+                                               json.dumps(quiz.get('sources', []), ensure_ascii=False), quiz.get('grounding_status', 'fallback')))
+        except aiomysql.OperationalError as exc:
+            if exc.args and exc.args[0] == 1054:
+                await cur.execute('''INSERT INTO quiz_sessions(quiz_id,user_id,title,summary,user_input,questions_json)
+                    VALUES(%s,%s,%s,%s,%s,%s)''', (quiz['quiz_id'], user_id, quiz['title'], quiz['summary'],
+                                                   user_input, json.dumps(quiz['questions'], ensure_ascii=False)))
+            else:
+                raise
 
 
 async def lock_quiz(conn, user_id, quiz_id):
@@ -54,13 +63,26 @@ async def history(pool, user_id, page, page_size):
 
 async def detail(pool, user_id, quiz_id):
     async with pool.acquire() as conn, conn.cursor(aiomysql.DictCursor) as cur:
-        await cur.execute('''SELECT q.quiz_id,q.title,q.summary,q.questions_json,a.records_json,r.report_json
+        try:
+            await cur.execute('''SELECT q.quiz_id,q.title,q.summary,q.questions_json,q.sources_json,q.grounding_status,a.records_json,r.report_json
             FROM quiz_sessions q JOIN reports r ON r.quiz_id=q.quiz_id AND r.user_id=q.user_id
             JOIN answer_records a ON a.quiz_id=q.quiz_id AND a.user_id=q.user_id
             WHERE q.user_id=%s AND q.quiz_id=%s''', (user_id, quiz_id))
+        except aiomysql.OperationalError as exc:
+            if not exc.args or exc.args[0] != 1054:
+                raise
+            await cur.execute('''SELECT q.quiz_id,q.title,q.summary,q.questions_json,a.records_json,r.report_json
+                FROM quiz_sessions q JOIN reports r ON r.quiz_id=q.quiz_id AND r.user_id=q.user_id
+                JOIN answer_records a ON a.quiz_id=q.quiz_id AND a.user_id=q.user_id
+                WHERE q.user_id=%s AND q.quiz_id=%s''', (user_id, quiz_id))
         row = await cur.fetchone()
         if row is None:
             return None
-        return {'quiz_id': row['quiz_id'], 'title': row['title'], 'summary': row['summary'],
+        result = {'quiz_id': row['quiz_id'], 'title': row['title'], 'summary': row['summary'],
                 'questions': json.loads(row['questions_json']), 'answer_records': json.loads(row['records_json']),
                 'report': json.loads(row['report_json'])}
+        if row.get('grounding_status'):
+            result['grounding_status'] = row['grounding_status']
+        if row.get('sources_json'):
+            result['sources'] = json.loads(row['sources_json'])
+        return result

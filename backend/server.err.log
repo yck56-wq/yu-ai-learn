@@ -1,0 +1,7 @@
+INFO:     Started server process [26536]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://127.0.0.1:8000 (Press CTRL+C to quit)
+grounding_retrieval_failed error_type=ValidationError
+quiz_provider_failed error_type=OpenAIConnectionError attempt=1
+quiz_provider_failed error_type=OpenAIConnectionError attempt=2

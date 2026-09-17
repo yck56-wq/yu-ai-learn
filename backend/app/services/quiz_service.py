@@ -1,6 +1,7 @@
 import json
 import logging
 import re
+import time
 import unicodedata
 from difflib import SequenceMatcher
 from uuid import uuid4
@@ -11,14 +12,16 @@ from pydantic import BaseModel
 
 from ..llm import get_llm
 from ..models import Question, Quiz, QuizRequest
+from ..retrieval import retrieve_sources
 
 logger = logging.getLogger(__name__)
 
 
 class QuizGenerationError(Exception):
-    def __init__(self, message: str, status_code: int = 502):
+    def __init__(self, message: str, status_code: int = 502, error_code: str = 'MODEL_QUALITY_FAILED'):
         super().__init__(message)
         self.status_code = status_code
+        self.error_code = error_code
 
 
 class QuizDraft(BaseModel):
@@ -41,6 +44,7 @@ single 有 4 个不同选项和 1 个答案；multiple 有 4 个不同选项和�
 单题 JSON 结构示例（字段格式示例，不是本次要重复生成的内容）：
 {example}'''),
     ('human', '''学习内容：{user_input}
+参考资料（可能为空；仅可使用其中有依据的内容）：{grounding_context}
 题量：{question_count}
 难度：{difficulty}（mixed 表示由浅入深）
 质量修正要求：{feedback}'''),
@@ -61,7 +65,7 @@ def _normalize(text: str) -> str:
     return re.sub(r'[\W_]+', '', text)
 
 
-def _validate_quiz(quiz: QuizDraft, count: int) -> None:
+def _validate_quiz(quiz: QuizDraft, count: int, source_ids: set[str] | None = None) -> None:
     if len(quiz.questions) != count:
         raise ValueError('题量不符，请严格按指定数量生成。')
     if not quiz.title.strip() or not quiz.summary.strip():
@@ -70,6 +74,8 @@ def _validate_quiz(quiz: QuizDraft, count: int) -> None:
     option_sets: set[tuple[str, ...]] = set()
     points: set[str] = set()
     for question in quiz.questions:
+        if source_ids is not None and source_ids and (not question.source_ids or not set(question.source_ids).issubset(source_ids)):
+            raise ValueError('每道题必须引用已获取的来源。')
         if not all(value.strip() for value in [question.stem, question.explanation, question.knowledge_point]):
             raise ValueError('题干、讲解和知识点必须完整。')
         stem = _normalize(question.stem)
@@ -96,22 +102,56 @@ def _validate_quiz(quiz: QuizDraft, count: int) -> None:
         raise ValueError('知识点覆盖不足，至少覆盖3个不同的具体知识点。')
 
 
+def _validate_evidence(quiz: QuizDraft, sources: list, source_ids: set[str]) -> None:
+    """Require each grounded question to cite an existing source with textual overlap."""
+    by_id = {source.id: source for source in sources}
+    for question in quiz.questions:
+        ids = list(dict.fromkeys(question.source_ids))
+        if not ids or any(source_id not in source_ids for source_id in ids):
+            raise ValueError('题目引用了不存在的来源。')
+        claim = _normalize(' '.join([question.stem, question.explanation, question.knowledge_point] + [o.text for o in question.options]))
+        supported = False
+        for source_id in ids:
+            source = by_id.get(source_id)
+            snippet = _normalize(getattr(source, 'snippet', '') if source else '')
+            if snippet and (len(snippet) >= 12 and (snippet in claim or claim in snippet)):
+                supported = True
+                break
+            tokens = [token for token in re.findall(r'[\u4e00-\u9fff]{2,}|[a-z0-9]{4,}', snippet)]
+            if tokens and sum(token in claim for token in tokens) >= max(1, min(3, len(tokens) // 4)):
+                supported = True
+                break
+        if not supported:
+            raise ValueError('题目关键断言缺少来源证据。')
+
+
 def generate_quiz(req: QuizRequest) -> dict:
+    started = time.perf_counter()
     llm = get_llm()
     if llm is None:
         raise QuizGenerationError('出题服务尚未配置，请检查后端模型配置。', 503)
     # DeepSeek 官方 JSON Output 使用 json_object，避免依赖其他提供方的 JSON Schema API。
     chain = PROMPT | llm.with_structured_output(QuizDraft, method='json_mode')
     feedback = '首次生成，请确保题目内容、具体知识点和选项都具有区分度。'
+    sources = retrieve_sources(req.user_input.strip())
+    logger.info('grounding_completed source_count=%s elapsed_ms=%s', len(sources), round((time.perf_counter() - started) * 1000))
+    grounding_context = '\n'.join(f'[{s.id}] {s.title} {s.url}\n{s.snippet}' for s in sources)[:3000]
     for attempt in range(2):
         try:
             result = chain.invoke({
                 'user_input': req.user_input.strip(), 'question_count': req.question_count,
-                'difficulty': req.difficulty, 'feedback': feedback,
+                'difficulty': req.difficulty, 'feedback': feedback, 'grounding_context': grounding_context,
             })
-            _validate_quiz(result, req.question_count)
+            _validate_quiz(result, req.question_count, {source.id for source in sources} if sources else None)
+            if sources:
+                _validate_evidence(result, sources, {source.id for source in sources})
             questions = [q.model_copy(update={'id': f'q{i+1}'}) for i, q in enumerate(result.questions)]
-            return Quiz(quiz_id=f'quiz_{uuid4().hex}', title=result.title, summary=result.summary, questions=questions).model_dump()
+            payload = Quiz(quiz_id=f'quiz_{uuid4().hex}', title=result.title, summary=result.summary, questions=questions,
+                           sources=[s.__dict__ for s in sources], grounding_status='grounded' if sources else 'fallback').model_dump()
+            for question in payload['questions']:
+                if not question.get('source_ids'):
+                    question.pop('source_ids', None)
+            return payload
         except ValueError:
             # 不把解析异常原文（可能含模型输出）写入日志或下一次提示词。
             logger.warning('quiz_quality_rejected attempt=%s', attempt + 1)

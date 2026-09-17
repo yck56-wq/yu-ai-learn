@@ -26,6 +26,8 @@ CREATE TABLE IF NOT EXISTS `quiz_sessions` (
   `summary` TEXT NOT NULL,
   `user_input` TEXT NOT NULL,
   `questions_json` JSON NOT NULL,
+  `sources_json` JSON NULL,
+  `grounding_status` VARCHAR(16) NOT NULL DEFAULT 'fallback',
   `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   UNIQUE KEY `uk_quiz_sessions_quiz_id` (`quiz_id`),

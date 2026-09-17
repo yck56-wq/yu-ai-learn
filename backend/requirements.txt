@@ -5,6 +5,8 @@ pytest
 httpx
 langchain-core==1.6.2
 langchain-openai==1.6.0
+langchain-tavily
+langgraph
 uvicorn
 aiomysql==0.3.2
 PyJWT>=2.10,<3

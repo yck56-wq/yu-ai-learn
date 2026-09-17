@@ -5,6 +5,10 @@ class Settings(BaseSettings):
     deepseek_api_key: str = ''
     deepseek_base_url: str = 'https://api.deepseek.com'
     deepseek_model: str = 'deepseek-chat'
+    tavily_api_key: str = ''
+    grounding_enabled: bool = True
+    grounding_timeout_seconds: int = 15
+    grounding_max_tool_calls: int = 2
     mysql_host: str = 'localhost'
     mysql_port: int = 3306
     mysql_user: str = ''

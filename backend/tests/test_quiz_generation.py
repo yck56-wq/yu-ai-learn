@@ -137,3 +137,10 @@ def test_transient_provider_failure_retries_and_returns_valid_quiz(provider, gen
     assert response.status_code == 200
     assert response.json()['data']['questions'] == quiz_data()['questions']
     assert len(requests) == 2
+
+
+def test_grounded_questions_must_reference_known_sources(monkeypatch):
+    draft = quiz_service.QuizDraft.model_validate(quiz_data()['questions'] and {
+        'title': 'RAG', 'summary': 'summary', 'questions': quiz_data()['questions']})
+    with pytest.raises(ValueError):
+        quiz_service._validate_quiz(draft, 5, {'s1'})
