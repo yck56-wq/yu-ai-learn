@@ -144,3 +144,33 @@ def test_grounded_questions_must_reference_known_sources(monkeypatch):
         'title': 'RAG', 'summary': 'summary', 'questions': quiz_data()['questions']})
     with pytest.raises(ValueError):
         quiz_service._validate_quiz(draft, 5, {'s1'})
+
+
+def test_unknown_source_id_and_unsupported_evidence_are_rejected():
+    from app.grounding import Source
+    draft_data = quiz_data()
+    for question in draft_data['questions']:
+        question['source_ids'] = ['missing']
+    draft = quiz_service.QuizDraft.model_validate({'title': 'RAG', 'summary': 'summary', 'questions': draft_data['questions']})
+    with pytest.raises(ValueError):
+        quiz_service._validate_quiz(draft, 5, {'s1'})
+    for question in draft_data['questions']:
+        question['source_ids'] = ['s1']
+    draft = quiz_service.QuizDraft.model_validate({'title': 'RAG', 'summary': 'summary', 'questions': draft_data['questions']})
+    with pytest.raises(ValueError):
+        quiz_service._validate_evidence(draft, [Source(id='s1', title='x', snippet='unrelated')], {'s1'})
+
+
+def test_chinese_private_evidence_accepts_shared_key_terms():
+    from app.grounding import Source
+    questions = quiz_data(3)['questions']
+    for index, question in enumerate(questions):
+        question['source_ids'] = ['p1']
+        question['stem'] = ['安全生产六大铁律中的第一项要求是什么？',
+                            '企业文化的核心使命强调什么？',
+                            '双碳目标要求企业如何推进环保？'][index]
+        question['explanation'] = '资料明确说明安全生产、企业使命和双碳目标等关键要求。'
+        question['knowledge_point'] = ['安全生产六大铁律', '企业使命', '双碳目标'][index]
+    draft = quiz_service.QuizDraft.model_validate({'title': '企业文化', 'summary': '内部培训', 'questions': questions})
+    source = Source(id='p1', title='企业文化笔记', snippet='安全生产六大铁律；企业使命；双碳目标与生态环保。')
+    quiz_service._validate_evidence(draft, [source], {'p1'})

@@ -1,0 +1,6 @@
+INFO:     Started server process [21624]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://127.0.0.1:8000 (Press CTRL+C to quit)
+private_retrieval_failed error_type=ValueError
+private_retrieval_failed error_type=ValueError

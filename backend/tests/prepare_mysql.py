@@ -30,11 +30,14 @@ def prepare():
     # 明确固定专用测试库；只在此库执行原始建表语句。
     with connection() as conn, conn.cursor() as cur:
         cur.execute('CREATE DATABASE IF NOT EXISTS yu_ai_learn_test CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci')
-    sql = (Path(__file__).resolve().parents[2] / 'sql/001_user_system.sql').read_text(encoding='utf-8')
     with connection('yu_ai_learn_test') as conn, conn.cursor() as cur:
-        for statement in sql.split(';'):
-            if statement.strip().startswith('CREATE TABLE'):
-                cur.execute(statement)
+        for name in ('001_user_system.sql', '002_private_knowledge_base.sql'):
+            sql = (Path(__file__).resolve().parents[2] / 'sql' / name).read_text(encoding='utf-8')
+            for statement in sql.split(';'):
+                if statement.strip().startswith(('CREATE DATABASE', 'USE')):
+                    continue
+                if statement.strip():
+                    cur.execute(statement)
     print('Dedicated test schema ready.')
 
 

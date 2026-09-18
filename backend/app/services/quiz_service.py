@@ -3,6 +3,7 @@ import logging
 import re
 import time
 import unicodedata
+import inspect
 from difflib import SequenceMatcher
 from uuid import uuid4
 
@@ -40,6 +41,7 @@ PROMPT = ChatPromptTemplate.from_messages([
 single 有 4 个不同选项和 1 个答案；multiple 有 4 个不同选项和至少 2 个答案；judge 有 2 个选项和 1 个答案。
 答案必须引用选项 key；避免全部答案都在同一位置。每题必须有通俗准确的讲解和具体 knowledge_point。
 不要捏造学习材料中不存在的制度、数据和来源。题干不要直接复述整段用户输入。
+当参考资料非空时，每道题都必须在 source_ids 中填写实际参考资料的 ID，只能使用参考资料中出现的 ID；没有参考资料时 source_ids 可为空。
 只输出 JSON，不要 Markdown。Schema：{schema}
 单题 JSON 结构示例（字段格式示例，不是本次要重复生成的内容）：
 {example}'''),
@@ -104,6 +106,11 @@ def _validate_quiz(quiz: QuizDraft, count: int, source_ids: set[str] | None = No
 
 def _validate_evidence(quiz: QuizDraft, sources: list, source_ids: set[str]) -> None:
     """Require each grounded question to cite an existing source with textual overlap."""
+    def evidence_terms(text: str) -> set[str]:
+        terms = set(re.findall(r'[\u4e00-\u9fff]{2}', text))
+        terms.update(re.findall(r'[a-z0-9]{4,}', text.casefold()))
+        return terms
+
     by_id = {source.id: source for source in sources}
     for question in quiz.questions:
         ids = list(dict.fromkeys(question.source_ids))
@@ -117,15 +124,15 @@ def _validate_evidence(quiz: QuizDraft, sources: list, source_ids: set[str]) -> 
             if snippet and (len(snippet) >= 12 and (snippet in claim or claim in snippet)):
                 supported = True
                 break
-            tokens = [token for token in re.findall(r'[\u4e00-\u9fff]{2,}|[a-z0-9]{4,}', snippet)]
-            if tokens and sum(token in claim for token in tokens) >= max(1, min(3, len(tokens) // 4)):
+            tokens = evidence_terms(snippet)
+            if tokens and sum(token in claim for token in tokens) >= min(3, len(tokens)):
                 supported = True
                 break
         if not supported:
             raise ValueError('题目关键断言缺少来源证据。')
 
 
-def generate_quiz(req: QuizRequest) -> dict:
+def generate_quiz(req: QuizRequest, user_id: int | None = None) -> dict:
     started = time.perf_counter()
     llm = get_llm()
     if llm is None:
@@ -133,7 +140,14 @@ def generate_quiz(req: QuizRequest) -> dict:
     # DeepSeek 官方 JSON Output 使用 json_object，避免依赖其他提供方的 JSON Schema API。
     chain = PROMPT | llm.with_structured_output(QuizDraft, method='json_mode')
     feedback = '首次生成，请确保题目内容、具体知识点和选项都具有区分度。'
-    sources = retrieve_sources(req.user_input.strip())
+    retriever = retrieve_sources
+    retriever_params = inspect.signature(retriever).parameters
+    if 'document_id' in retriever_params:
+        sources = retriever(req.user_input.strip(), user_id, req.knowledge_document_id)
+    elif 'user_id' in retriever_params:
+        sources = retriever(req.user_input.strip(), user_id)
+    else:
+        sources = retriever(req.user_input.strip())
     logger.info('grounding_completed source_count=%s elapsed_ms=%s', len(sources), round((time.perf_counter() - started) * 1000))
     grounding_context = '\n'.join(f'[{s.id}] {s.title} {s.url}\n{s.snippet}' for s in sources)[:3000]
     for attempt in range(2):

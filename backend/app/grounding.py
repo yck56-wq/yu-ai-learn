@@ -7,11 +7,15 @@ from urllib.parse import parse_qsl, urlencode, urlsplit, urlunsplit
 class Source:
     id: str
     title: str
-    url: str
-    publisher: str
-    snippet: str
+    url: str = ''
+    publisher: str = ''
+    snippet: str = ''
     published_at: str | None = None
     fetched_at: str | None = None
+    source_type: str = 'web'
+    document_id: str | None = None
+    file_name: str | None = None
+    page: int | None = None
 
 
 def extract_urls(text: str) -> list[str]:

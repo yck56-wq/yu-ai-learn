@@ -23,7 +23,7 @@ def db():
     with conn.cursor() as cur:
         cur.execute('SELECT DATABASE() AS db')
         assert cur.fetchone()['db'] == 'yu_ai_learn_test'
-        for table in ('reports', 'answer_records', 'quiz_sessions', 'users'):
+        for table in ('reports', 'answer_records', 'quiz_sessions', 'knowledge_documents', 'users'):
             cur.execute('DELETE FROM ' + table)
     yield conn
     conn.close()
